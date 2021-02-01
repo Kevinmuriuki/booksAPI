@@ -1,31 +1,19 @@
+/* eslint-disable indent */
+/* eslint-disable no-shadow */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
 /* eslint-disable linebreak-style */
 const express = require('express');
+const booksController = require('../controllers/booksController');
 
 function routes(Book) {
   const bookRouter = express.Router();
+  const controller = booksController(Book);
 
   bookRouter.route('/books')
-    .post((req, res) => {
-      const book = new Book(req.body);
-
-      book.save();
-      return res.status(201).json();
-    })
-    .get((req, res) => {
-      const query = {};
-      if (req.query.genre) {
-        query.genre = req.query.genre;
-      }
-      Book.find(query, (err, books) => {
-        if (err) {
-          return res.send(err);
-        }
-        return res.json(books);
-      });
-    });
+    .post(controller.post)
+    .get(controller.get);
 
   // midleware
   bookRouter.use('/books/:bookId', (req, res, next) => {
@@ -71,6 +59,14 @@ function routes(Book) {
           return res.send(err);
         }
         return res.json(book);
+      });
+    })
+    .delete((req, res) => {
+      req.book.remove((err) => {
+        if (err) {
+          return res.send(err);
+        }
+        return res.sendStatus(204);
       });
     });
 
