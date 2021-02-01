@@ -4,7 +4,14 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const app = express();
-const db = mongoose.connect('mongodb://localhost/bookAPI');
+
+if (process.env.ENV === 'Test') {
+  console.log('This is a test');
+  const db = mongoose.connect('mongodb://localhost/bookAPI');
+}else {
+  console.log('This is not a test');
+  const db = mongoose.connect('mongodb://localhost/bookAPI');
+}
 
 const port = process.env.PORT || 3000;
 const Book = require('./models/bookModel');
@@ -18,7 +25,10 @@ app.get('/', (req, res) => {
   res.send('Welcome to RESTful web services.');
 });
 
-app.listen(port, () => {
+// added app.server in order to assist closing the application at the end of an integration test
+app.server = app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`Listening to port: ${port}`);
 });
+
+module.exports = app;
