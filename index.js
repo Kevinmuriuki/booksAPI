@@ -16,8 +16,8 @@ bookRouter.route('/books')
   .post((req, res) => {
     const book = new Book(req.body);
 
-    console.log(book);
-    return res.json();
+    book.save();
+    return res.status(201).json();
   })
   .get((req, res) => {
     const query = {};
